@@ -15,6 +15,9 @@
         border-color: rgb(10, 187, 81);
       }
     </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   </head>
   <body>
     <div class="container mt-5">
@@ -38,6 +41,7 @@
     <!-- Optional JavaScript -->
     <script>
       let inputText = "";
+      let fixInputText ="";
       const inputBtn = document.getElementById("inputbtn");
       const input = document.getElementById("inputText");
       const ol = document.getElementById("todolist");
@@ -76,6 +80,73 @@
         }
       });
 
+      ol.addEventListener("click", function (event) {
+        if (event.target.className === "btn btn-danger btn-sm fix") {
+
+          //把要修改的那項li變成input
+
+          const fixLi = document.getElementById("Li"+event.target.dataset.userId)
+          const newInput = document.createElement("input");
+          
+          newInput.type = "text";
+          newInput.className = "form-control ";
+          newInput.value = fixLi.textContent.slice(0,-4);
+          newInput.placeholder = "你要修改的新內容...";
+          newInput.id = "fixInputText";
+          
+          let parent = fixLi.parentNode;
+          parent.replaceChild(newInput,fixLi);
+          
+          //做出修改和刪除鍵
+          const newBtn = document.createElement("button");
+          const newfix = document.createElement("button");
+
+          
+          newBtn.innerHTML = "刪除";
+          newBtn.className = "btn btn-danger btn-sm deletebtn";
+          newBtn.dataset.userId = event.target.dataset.userId;
+          newBtn.style = "width:20%";
+
+
+          newfix.innerHTML = "送出修改";
+          newfix.className = "btn btn-danger btn-sm fix input";
+          newfix.dataset.userId = event.target.dataset.userId;
+          newfix.style = "width:20%";
+
+          newInput.insertAdjacentElement('afterend', newBtn);
+          newInput.insertAdjacentElement('afterend', newfix);
+
+          /*
+          newInput.appendChild(newfix); //產生按鈕
+          newInput.appendChild(newBtn); //產生按鈕
+          */
+
+
+          
+          
+        }
+      });
+
+      ol.addEventListener("click", function (event) {
+        if (event.target.className === "btn btn-danger btn-sm fix input") {
+          const fixInput = document.getElementById("fixInputText");
+          //按下送出修改鍵後
+          fixInputText = fixInput.value;
+          if (fixInputText === "") {
+            alert("輸入內容不得為空。");
+          } else {
+            todos[Number(event.target.dataset.userId)].name = fixInputText;
+            alert(
+              "修改了第" +
+              Number(event.target.dataset.userId) +
+                "項代辦作業：" +
+                todos[Number(event.target.dataset.userId)].name
+            );
+            renderList(todos);
+          }
+        }
+      });
+
       function renderList(list) {
         ol.innerHTML = "";
         list.forEach((element) => {
@@ -88,6 +159,7 @@
             newLi.className =
               "list-group-item d-flex justify-content-between align-items-center";
             newLi.dataset.userId = element.id;
+            newLi.id = "Li" + element.id;
 
             newBtn.innerHTML = "刪除";
             newBtn.className = "btn btn-danger btn-sm deletebtn";
@@ -106,8 +178,5 @@
       renderList(todos);
     </script>
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   </body>
 </html>
