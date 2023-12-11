@@ -41,7 +41,7 @@
     <!-- Optional JavaScript -->
     <script>
       let inputText = "";
-      let fixInputText ="";
+      let fixInputText = "";
       const inputBtn = document.getElementById("inputbtn");
       const input = document.getElementById("inputText");
       const ol = document.getElementById("todolist");
@@ -82,48 +82,38 @@
 
       ol.addEventListener("click", function (event) {
         if (event.target.className === "btn btn-danger btn-sm fix") {
-
           //把要修改的那項li變成input
 
-          const fixLi = document.getElementById("Li"+event.target.dataset.userId)
+          const fixLi = document.getElementById(
+            "Li" + event.target.dataset.userId
+          );
           const newInput = document.createElement("input");
-          
+
           newInput.type = "text";
           newInput.className = "form-control ";
-          newInput.value = fixLi.textContent.slice(0,-4);
+          newInput.value = fixLi.textContent.slice(0, -4);
           newInput.placeholder = "你要修改的新內容...";
           newInput.id = "fixInputText";
-          
+
           let parent = fixLi.parentNode;
-          parent.replaceChild(newInput,fixLi);
-          
+          parent.replaceChild(newInput, fixLi);
+
           //做出修改和刪除鍵
           const newBtn = document.createElement("button");
           const newfix = document.createElement("button");
 
-          
           newBtn.innerHTML = "刪除";
           newBtn.className = "btn btn-danger btn-sm deletebtn";
           newBtn.dataset.userId = event.target.dataset.userId;
           newBtn.style = "width:20%";
-
 
           newfix.innerHTML = "送出修改";
           newfix.className = "btn btn-danger btn-sm fix input";
           newfix.dataset.userId = event.target.dataset.userId;
           newfix.style = "width:20%";
 
-          newInput.insertAdjacentElement('afterend', newBtn);
-          newInput.insertAdjacentElement('afterend', newfix);
-
-          /*
-          newInput.appendChild(newfix); //產生按鈕
-          newInput.appendChild(newBtn); //產生按鈕
-          */
-
-
-          
-          
+          newInput.insertAdjacentElement("afterend", newBtn);
+          newInput.insertAdjacentElement("afterend", newfix);
         }
       });
 
@@ -138,7 +128,7 @@
             todos[Number(event.target.dataset.userId)].name = fixInputText;
             alert(
               "修改了第" +
-              Number(event.target.dataset.userId) +
+                Number(event.target.dataset.userId) +
                 "項代辦作業：" +
                 todos[Number(event.target.dataset.userId)].name
             );
