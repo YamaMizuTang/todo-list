@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <title>待辦事項清單</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      .fix {
+        background-color: rgb(10, 187, 81);
+        color: white;
+        border-color: rgb(10, 187, 81);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1>我的待辦事項</h1>
+      <div class="input-group mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="新增待辦事項..."
+          id="inputText"
+        />
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button" id="inputbtn">
+            添加
+          </button>
+        </div>
+      </div>
+      <ol class="list-group" id="todolist"></ol>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <script>
+      let inputText = "";
+      const inputBtn = document.getElementById("inputbtn");
+      const input = document.getElementById("inputText");
+      const ol = document.getElementById("todolist");
+      const li = document.getElementsByClassName(
+        "list-group-item d-flex justify-content-between align-items-center"
+      );
+
+      let todos = [
+        {
+          id: 0,
+          name: "範例：運動一小時",
+          deleted: false,
+        },
+      ];
+
+      inputBtn.addEventListener("click", function () {
+        inputText = input.value;
+        if (inputText === "") {
+          alert("輸入內容不得為空。");
+        } else {
+          todos.push({ id: todos.length, name: inputText, deleted: false });
+          alert(
+            "新增了第" +
+              todos[todos.length - 1].id +
+              "項代辦作業：" +
+              todos[todos.length - 1].name
+          );
+          renderList(todos);
+        }
+      });
+
+      ol.addEventListener("click", function (event) {
+        if (event.target.className === "btn btn-danger btn-sm deletebtn") {
+          todos[Number(event.target.dataset.userId)].deleted = true;
+          renderList(todos);
+        }
+      });
+
+      function renderList(list) {
+        ol.innerHTML = "";
+        list.forEach((element) => {
+          if (element.deleted === false) {
+            const newLi = document.createElement("li");
+            const newBtn = document.createElement("button");
+            const newfix = document.createElement("button");
+
+            newLi.textContent = element.name;
+            newLi.className =
+              "list-group-item d-flex justify-content-between align-items-center";
+            newLi.dataset.userId = element.id;
+
+            newBtn.innerHTML = "刪除";
+            newBtn.className = "btn btn-danger btn-sm deletebtn";
+            newBtn.dataset.userId = element.id;
+
+            newfix.innerHTML = "修改";
+            newfix.className = "btn btn-danger btn-sm fix";
+            newfix.dataset.userId = element.id;
+
+            ol.prepend(newLi); //產生ol的第一個
+            newLi.appendChild(newfix); //產生按鈕
+            newLi.appendChild(newBtn); //產生按鈕
+          }
+        });
+      }
+      renderList(todos);
+    </script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
