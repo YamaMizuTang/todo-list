@@ -42,13 +42,10 @@
     <script>
       let inputText = "";
       let fixInputText = "";
-      const $inputBtn = $("#inputbtn"); //JQuery改寫
-      const $ol = $("#todolist"); //JQuery
-      const li = document.getElementsByClassName(
-        "list-group-item d-flex justify-content-between align-items-center"
-      );
+      const $inputBtn = $("#inputbtn"); //JQuery改寫；添加按鈕的DOM
+      const $ol = $("#todolist"); //JQuery；表上清單的DOM
 
-      let todos = [
+      let todosArray = [
         {
           id: 0,
           name: "範例：運動一小時",
@@ -56,29 +53,46 @@
         },
       ];
 
+      //把fetch的資料塞進todosArray
+      async function getList() {
+        let fetchPromise = await fetch("/list"); //fetch回傳Promise(兩層)，解開第一層
+        todosArray = await fetchPromise.json(); //解開第二層
+        console.log("getList" + todosArray + "\n");
+      } //async 回傳Promise
+
+      //添加事項
       $inputBtn.click(function () {
         //JQuery改寫
-        inputText = $("#inputText").val(); //JQuery改寫
+        inputText = $("#inputText").val(); //JQuery改寫；取輸入框中的值
         if (inputText === "") {
           alert("輸入內容不得為空。");
         } else {
-          todos.push({ id: todos.length, name: inputText, deleted: false });
-          alert(
-            "新增了第" +
-              todos[todos.length - 1].id +
-              "項代辦作業：" +
-              todos[todos.length - 1].name
-          );
-          renderList(todos);
+          fetch(`/add?newEvent=${inputText}`) //把輸入框中的字傳進/add中當query->檔案被修改
+            .then((res) => res.json()) //解開fetch回傳的更新後的陣列第一層
+            .then((data) => {
+              //這裡沒有解開fetch回傳的更新後的陣列第二層?
+              alert(
+                "新增了第" + todosArray.length + "項代辦作業：" + inputText //這是更新前的todosArray
+              );
+            })
+            .then((data) => {
+              renderList(); //此時才把todosArray更新完
+            });
         }
       });
 
+      //刪除
       $ol.on("click", ".deletebtn", function () {
         //JQuery改寫
-        todos[$(this).data("userId")].deleted = true; //JQuery改寫
-        renderList(todos);
+        fetch(`/remove?deleteEvent=${todosArray[$(this).data("userId")].name}`) //把輸入框中的字傳進/remove中當query->改false，檔案被修改
+          .then((res) => res.json()) //解開fetch回傳的更新後的陣列第一層
+          .then((data) => {
+            //這裡沒有解開fetch回傳的更新後的陣列第二層?
+            renderList(); //此時才把todosArray更新完
+          });
       });
 
+      //修改
       $ol.on("click", ".fix", function () {
         //JQuery改寫
         const userId = $(this).data("userId"); //JQuery改寫
@@ -121,15 +135,15 @@
         if (fixInputText === "") {
           alert("輸入內容不得為空。");
         } else {
-          todos[userId].name = fixInputText; //JQuery改寫
+          todosArray[userId].name = fixInputText; //JQuery改寫
           alert(
-            "修改了第" + userId + "項代辦作業：" + todos[userId].name //JQuery改寫
+            "修改了第" + userId + "項代辦作業：" + todosArray[userId].name //JQuery改寫
           );
-          renderList(todos);
+          renderList(todosArray);
         }
       });
 
-      function renderList(list) {
+      function syncRenderList(list) {
         $ol.empty(); // 改寫
         list.forEach((element) => {
           if (element.deleted === false) {
@@ -161,7 +175,21 @@
           }
         });
       }
-      renderList(todos);
+      async function renderList() {
+        await getList();
+        syncRenderList(todosArray);
+      }
+
+      renderList(); //why 如果傳參數進去就不對QQ
+
+      // /*不對的寫法
+      // async function renderList(arr) {
+      //   await getList();
+      //   syncRenderList(arr);
+      // }
+
+      // renderList(todosArray);
+      
     </script>
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   </body>
